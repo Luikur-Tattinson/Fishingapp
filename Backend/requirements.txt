@@ -7,3 +7,4 @@ redis
 django-redis
 gunicorn
 Pillow
+django-cors-headers
