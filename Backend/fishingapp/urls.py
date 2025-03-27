@@ -19,10 +19,14 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from users.views import register_user
 from users.views import CustomTokenObtainPairView
+from users.views import get_user_profile
+from users.views import forgot_password
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', register_user, name='register'), 
+    path('api/me/', get_user_profile, name='get_user_profile'),
+    path('api/forgot-password/', forgot_password, name='forgot-password'),
 ]

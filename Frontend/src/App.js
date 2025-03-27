@@ -7,6 +7,7 @@ import Profile from './components/Profile';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import ProtectedRoute from './components/ProtectedRoute';
+import EditProfile from './components/EditProfile';
 
 function App() {
   return(
@@ -17,6 +18,7 @@ function App() {
         <Route path="/register" element={<Register/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>}/>
+        <Route path="/editprofile" element={<ProtectedRoute><EditProfile/></ProtectedRoute>}/>
       </Routes>
     </>
   );

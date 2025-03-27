@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Container } from 'react-bootstrap';
+import { Form, Button, Container, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { login } from '../features/auth/authSlice';
@@ -44,6 +44,35 @@ function Login() {
       }
     };
 
+
+  //Forgot password modal
+  const [show, setShow] = useState(false);
+  const [email, setEmail] = useState('');
+
+  const handleClose = () => {
+    setShow(false);
+    setEmail('');
+  }
+  const handleShow = () => setShow(true);
+
+  const resetPasswordSubmit = async (e) => {
+    e.preventDefault();
+
+    try
+    {
+      const response = await axios.post('http://localhost:8000/api/forgot-password/', {
+        email: email,
+      });
+      console.log(response);
+      alert('If an email was found, recovery instructions have been sent');
+      handleClose();
+    } catch (error)
+    {
+      console.error(error);
+      handleClose();
+    }
+  }
+
       return (
             <Container className="mt-4">
               <h2>Login</h2>
@@ -75,6 +104,27 @@ function Login() {
                 </Button>
               </Form>
               <p>No account? Register <a className="text-success" href="/register">here</a></p>
+
+              <button className="btn btn-link nav-link" onClick={handleShow}>Forgot Password?</button>
+              <Modal show={show} onHide={handleClose}>
+              <Modal.Header closeButton>
+              <Modal.Title>Enter your email</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form onSubmit={resetPasswordSubmit}>
+                <Form.Group className="mb-3" controlId="formEmail">
+                  <Form.Control
+                    type="email"
+                    placeholder='Email'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </Form.Group>
+                <Button variant="primary" type="submit">Submit</Button>
+                </Form>
+              </Modal.Body>
+              </Modal>
             </Container>
           );
 }
