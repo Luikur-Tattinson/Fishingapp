@@ -41,7 +41,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        cd backend
+        cd Backend
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
@@ -52,5 +52,5 @@ jobs:
         POSTGRES_PASSWORD: postgres
         POSTGRES_HOST: localhost
       run: |
-        cd backend
+        cd Backend
         python manage.py test
