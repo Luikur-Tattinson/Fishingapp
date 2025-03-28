@@ -1,7 +1,6 @@
 from django.test import TestCase
 from .models import CatchEntry
 from django.contrib.auth.models import User
-from datetime import date
 
 class CatchModelTest(TestCase):
     def test_string_representation(self):
@@ -14,7 +13,7 @@ class CatchModelTest(TestCase):
             species = 'StreetShark',
             weight = 2.5,
             length = 900,
-            date_caught = date_today(),
+            date_caught = '1900-12-12',
             image = 'test.jpg'
         )
 
