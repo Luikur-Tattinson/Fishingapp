@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 import EditProfile from './components/EditProfile';
+import Database from './components/Database';
 
 function App() {
   return(
@@ -15,6 +16,7 @@ function App() {
     <Navbar/>
       <Routes>
         <Route path="/" element={<Home/>}/>
+        <Route path="/database" element={<Database/>}/>
         <Route path="/register" element={<Register/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/profile" element={<ProtectedRoute><Profile/></ProtectedRoute>}/>

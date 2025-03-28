@@ -21,6 +21,7 @@ from users.views import register_user
 from users.views import CustomTokenObtainPairView
 from users.views import get_user_profile
 from users.views import forgot_password
+from catches.views import get_catches
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,4 +30,5 @@ urlpatterns = [
     path('register/', register_user, name='register'), 
     path('api/me/', get_user_profile, name='get_user_profile'),
     path('api/forgot-password/', forgot_password, name='forgot-password'),
+    path('api/get-catches/', get_catches, name='get-catches'),
 ]

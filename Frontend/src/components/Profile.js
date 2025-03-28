@@ -4,7 +4,6 @@ import axios from 'axios';
 function Profile()
 {
     const [profile, setProfile] = useState(null);
-    const [status, setStatus] = useState(null);
 
     useEffect(() => {
         const fetchProfile = async () => {
