@@ -29,7 +29,7 @@ class CatchModelTest(TestCase):
         )
 
         self.assertEqual(catch.user.username, 'testuser')
-        self.assertEqual(catch.species, 'Testfish')
+        self.assertEqual(catch.species, 'StreetShark')
         self.assertEqual(catch.temperature, 10.5)
         self.assertEqual(catch.latitude, 62.2426)
         self.assertEqual(catch.weather_code, 2)
