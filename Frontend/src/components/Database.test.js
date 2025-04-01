@@ -260,7 +260,7 @@ describe('Catch entry submission', () => {
   });
 });
 
-jest.mock('../axiosInstance');
+jest.mock('../utils/axiosInstance');
 
 describe('Weather data in catch details modal', () => {
   beforeEach(() => {
