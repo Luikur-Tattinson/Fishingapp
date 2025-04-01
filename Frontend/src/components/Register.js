@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, Container } from 'react-bootstrap';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 
 function Register() {
     const [formData, setFormData] = useState({
@@ -25,7 +25,7 @@ function Register() {
 
       try
       {
-        const response = await axios.post('http://localhost:8000/register/',
+        const response = await axiosInstance.post('http://localhost:8000/register/',
         {
           username: formData.username,
           email: formData.email,

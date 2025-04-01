@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
@@ -14,11 +14,7 @@ function EditProfile()
             try
             {
                 const token = localStorage.getItem('accessToken');
-                const response = await axios.get('http://localhost:8000/api/me/', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const response = await axiosInstance.get('http://localhost:8000/api/me/');
                 setProfile(response.data);
             } catch (error)
             {
@@ -37,7 +33,7 @@ function EditProfile()
         try
         {
             const token = localStorage.getItem('accessToken');
-            const response = await axios.patch('http://localhost:8000/api/me/', profile, {
+            const response = await axiosInstance.patch('http://localhost:8000/api/me/', profile, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

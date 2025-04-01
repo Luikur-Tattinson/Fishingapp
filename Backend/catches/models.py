@@ -8,8 +8,17 @@ class CatchEntry(models.Model):
     species = models.CharField(max_length=100)
     weight = models.FloatField()
     length = models.FloatField()
-    image = models.ImageField(upload_to='catches/MEDIA')  # Image saved in MEDIA folder under catches/
+    image = models.ImageField(upload_to='catches/MEDIA', blank=True, null=True)
     date_caught = models.DateField()
+    time_caught = models.TimeField()
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    
+    #Weather fields
+    temperature = models.FloatField(null=True, blank=True)
+    windspeed = models.FloatField(null=True, blank=True)
+    precipitation = models.FloatField(null=True, blank=True)
+    weather_code = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.species} ({self.weight} kg) by {self.user.username}"

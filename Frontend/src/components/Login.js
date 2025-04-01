@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Modal } from 'react-bootstrap';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 import { useDispatch } from 'react-redux';
 import { login } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
@@ -23,14 +23,14 @@ function Login() {
         
         try 
         {
-            const response = await axios.post('http://localhost:8000/api/token/', {
+            const response = await axiosInstance.post('http://localhost:8000/api/token/', {
                 username: formData.username,
                 password: formData.password,
             });
         
         const { access, refresh, username } = response.data;
         localStorage.setItem('accessToken', access);
-        localStorage.setItem('refreshtoken', refresh);
+        localStorage.setItem('refreshToken', refresh);
         localStorage.setItem('username', username);
 
         dispatch(login({ username }));
@@ -60,7 +60,7 @@ function Login() {
 
     try
     {
-      const response = await axios.post('http://localhost:8000/api/forgot-password/', {
+      const response = await axiosInstance.post('http://localhost:8000/api/forgot-password/', {
         email: email,
       });
       console.log(response);

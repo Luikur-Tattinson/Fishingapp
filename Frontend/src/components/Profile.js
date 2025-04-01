@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 
 function Profile()
 {
@@ -10,11 +10,7 @@ function Profile()
             try
             {
                 const token = localStorage.getItem('accessToken');
-                const response = await axios.get('http://localhost:8000/api/me/', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+                const response = await axiosInstance.get('http://localhost:8000/api/me/');
                 setProfile(response.data);
             } catch (error)
             {
@@ -31,7 +27,7 @@ function Profile()
             <>
             <p><strong>Username:</strong> {profile.username}</p>
             <p><strong>Email:</strong> {profile.email}</p>
-            <a class="btn btn-primary" href="/editprofile">Edit profile</a>
+            <a className="btn btn-primary" href="/editprofile">Edit profile</a>
             </>
         ) : (
             <p>Loading profile...</p>
