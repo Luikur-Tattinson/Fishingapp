@@ -196,7 +196,7 @@ describe('Geolocation feature', () => {
     });
   });
 
-  jest.mock('../axiosInstance');
+  jest.mock('../utils/axiosInstance');
 
 describe('Catch entry submission', () => {
   beforeEach(() => {
