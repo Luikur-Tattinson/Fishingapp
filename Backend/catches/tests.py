@@ -22,6 +22,8 @@ class CatchModelTest(TestCase):
             date_caught = '2025-04-01',
             time_caught = time(13, 0),
             image = 'test.jpg',
+            latitude=62.2426,
+            longitude=25.7473,
             temperature=10.5,
             windspeed=5.0,
             precipitation=0.0,

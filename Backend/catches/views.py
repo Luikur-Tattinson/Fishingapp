@@ -20,8 +20,13 @@ def create_catch(request):
     data = request.data.copy()
     data['user'] = request.user.id
     
-    latitude = float(data.get('latitude'))
-    longitude = float(data.get('longitude'))
+    try:
+        latitude = float(data.get('latitude'))
+        longitude = float(data.get('longitude'))
+    except (TypeError, ValueError):
+        return Response({'error': 'Latitude and longitude are required and must be valid numbers.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    
     date_str = data.get('date_caught')
     time_str = data.get('time_caught')
     
