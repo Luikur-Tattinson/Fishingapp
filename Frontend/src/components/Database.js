@@ -340,7 +340,7 @@ function Database()
           <MapSelector coords={coords} setCoords={setCoords} />
           
           {coords && (
-            <p>
+            <p data-testid="coords-display">
               Selected: {coords.latitude.toFixed(5)}, {coords.longitude.toFixed(5)}
             </p>
           )}

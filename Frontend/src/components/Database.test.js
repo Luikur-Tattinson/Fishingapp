@@ -1,3 +1,5 @@
+jest.mock('../utils/axiosInstance');
+
 import React from 'react';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import Database from '../components/Database';
@@ -8,7 +10,16 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 
-jest.mock('../utils/axiosInstance');
+jest.mock('react-leaflet', () => ({
+  MapContainer: ({ children }) => <div>{children}</div>,
+  TileLayer: () => <div></div>,
+  Marker: () => <div></div>,
+  useMapEvents: () => {},
+  useMap: () => ({
+    setView: jest.fn(), // Mock the setView method
+  }),
+}));
+
 
 function renderWithStore(isLoggedIn) {
   const store = configureStore({
@@ -62,7 +73,10 @@ describe('Geolocation feature', () => {
     renderWithStore(true);
     userEvent.click(screen.getByText(/add a new entry/i));
     userEvent.click(await screen.findByText(/use my location/i));
-    expect(await screen.findByText(/selected: 62.12345, 25.12345/i)).toBeInTheDocument();
+    await waitFor(() => {
+      const latLngText = screen.getByText(/selected: 62.12345, 25.12345/i);
+      expect(latLngText).toBeInTheDocument();
+    });
   });
 });
 
@@ -84,12 +98,22 @@ describe('Pagination on Database page', () => {
 
   test('changes number of displayed rows when selecting 10, 20, 30', async () => {
     renderWithStore(true);
-    await waitFor(() => expect(screen.getByText('Fish 1')).toBeInTheDocument());
-    expect(screen.getAllByRole('row')).toHaveLength(11); // 10 + header
-    userEvent.click(screen.getByText('20'));
-    await waitFor(() => expect(screen.getAllByRole('row')).toHaveLength(21));
-    userEvent.click(screen.getByText('30'));
-    await waitFor(() => expect(screen.getAllByRole('row')).toHaveLength(26)); // 25 + header
+  
+    await waitFor(() => {
+      expect(screen.getByText('Fish 1')).toBeInTheDocument();
+    });
+  
+    expect(screen.getAllByRole('row')).toHaveLength(11);
+  
+    userEvent.selectOptions(screen.getByRole('combobox'), '20');
+    await waitFor(() => {
+      expect(screen.getAllByRole('row')).toHaveLength(21);
+    });
+  
+    userEvent.selectOptions(screen.getByRole('combobox'), '30');
+    await waitFor(() => {
+      expect(screen.getAllByRole('row')).toHaveLength(26);
+    });
   });
 });
 
@@ -150,20 +174,40 @@ describe('Catch entry submission', () => {
         user: 'Tester',
       },
     });
+    global.navigator.geolocation = {
+      getCurrentPosition: jest.fn().mockImplementation((success) =>
+        success({
+          coords: { latitude: 62.12345, longitude: 25.12345 },
+        })
+      ),
+    };
+
     localStorage.setItem('accessToken', 'mock-token');
   });
 
   test('fills and submits the catch form', async () => {
     renderWithStore(true);
+  
     userEvent.click(screen.getByText(/add a new entry/i));
-    userEvent.type(screen.getByLabelText(/area/i), 'Lake Test');
-    userEvent.type(screen.getByLabelText(/body of water/i), 'River Test');
-    userEvent.type(screen.getByLabelText(/species/i), 'Salmon');
-    userEvent.type(screen.getByLabelText(/weight/i), '3.5');
-    userEvent.type(screen.getByLabelText(/length/i), '70');
-    userEvent.type(screen.getByLabelText(/catch date/i), '2025-04-02');
-    userEvent.type(screen.getByLabelText(/catch time/i), '13:00');
-    userEvent.click(screen.getByRole('button', { name: /submit/i }));
+  
+    const areaInput = await screen.findByLabelText(/area/i);
+    userEvent.type(areaInput, 'Lake Test');
+    userEvent.type(screen.getByLabelText(/Body of water/i), 'River Test');
+    userEvent.type(screen.getByLabelText(/Species/i), 'Salmon');
+    userEvent.type(screen.getByLabelText(/Weight/i), '3.5');
+    userEvent.type(screen.getByLabelText(/Length/i), '70');
+    userEvent.type(screen.getByLabelText(/Catch date/i), '2025-04-02');
+    userEvent.type(screen.getByLabelText(/Catch Time/i), '13:00');
+
+    userEvent.click(screen.getByText(/add a new entry/i));
+    await screen.findByText(/use my location/i);
+    userEvent.click(screen.getByText(/use my location/i));
+
+
+
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
+  
     await waitFor(() => {
       expect(axiosInstance.post).toHaveBeenCalledWith(
         'http://localhost:8000/api/catches/add/',
