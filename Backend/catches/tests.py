@@ -1,12 +1,13 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import CatchEntry
 from django.contrib.auth.models import User
-from datetime import datetime, time
+from datetime import datetime, time, date
 from rest_framework.test import APITestCase, APIClient
 from django.urls import reverse
 from unittest.mock import patch
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.cache import cache
 
 class CatchModelTest(TestCase):
     def test_create_catch_entry(self):
@@ -148,3 +149,68 @@ class CatchValidationTest(APITestCase):
 
         response = self.client.post('/api/catches/add/', data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        
+class CatchSearchTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username='angler', password='fish123')
+        CatchEntry.objects.create(
+            user=self.user,
+            area='Ironforge',
+            body_of_water='Forlorn pond',
+            species='Bass',
+            weight=2.0,
+            length=45.0,
+            date_caught=date(2025, 4, 2),
+            time_caught=time(13, 0),
+            latitude=62.1,
+            longitude=25.1,
+        )
+        CatchEntry.objects.create(
+            user=self.user,
+            area='Stormwind',
+            body_of_water='The canal',
+            species='Trout',
+            weight=1.5,
+            length=30.0,
+            date_caught=date(2025, 4, 2),
+            time_caught=time(14, 0),
+            latitude=62.2,
+            longitude=25.2,
+        )
+        cache.clear()
+
+    #Search tests
+    def test_search_across_all_fields(self):
+        response = self.client.get('/api/catches/search/?search=Iron')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]['species'], 'Bass')
+
+    def test_search_specific_field(self):
+        response = self.client.get('/api/catches/search/?search=trout&field=species')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]['area'], 'Stormwind')
+
+    def test_invalid_field(self):
+        response = self.client.get('/api/catches/search/?search=test&field=invalid_field')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json())
+
+    def test_missing_search_term(self):
+        response = self.client.get('/api/catches/search/?field=species')
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json())
+
+    def test_no_matches(self):
+        response = self.client.get('/api/catches/search/?search=unicorn')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 0)
+
+    def test_cache_usage(self):
+        self.client.get('/api/catches/search/?search=bass')
+        response = self.client.get('/api/catches/search/?search=bass')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]['species'], 'Bass')

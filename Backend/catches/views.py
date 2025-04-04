@@ -1,12 +1,17 @@
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status, generics, filters
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from .models import CatchEntry
 from .serializers import CatchSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 import requests
 from datetime import datetime, date
+from django_filters.rest_framework import DjangoFilterBackend
+from django.core.cache import cache
+import hashlib
+import json
+from django.db.models import Q
 
 @api_view(['GET'])
 def get_catches(request):
@@ -98,3 +103,60 @@ def create_catch(request):
         serializer.save(user=request.user)  # Associate the logged-in user
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#search system
+
+class CatchSearchView(generics.ListAPIView):
+    queryset = CatchEntry.objects.all()
+    serializer_class = CatchSerializer
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    search_fields = ['species', 'area', 'body_of_water', 'user__username']
+    filterset_fields = ['species', 'area', 'body_of_water', 'date_caught', 'user__username']  # For exact matching
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        return queryset
+    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def search_catches(request):
+    print("Query Params:", request.query_params)
+    query_params = request.query_params.dict()
+    cache_key = 'search:' + hashlib.md5(json.dumps(query_params, sort_keys=True).encode()).hexdigest()
+
+    # Try fetching cached data
+    cached_response = cache.get(cache_key)
+    if cached_response:
+        return Response(cached_response)
+
+    search_term = request.GET.get('search', '')
+    search_field = request.GET.get('field', '')
+
+    if not search_term:
+        return Response({"error": "No search term provided"}, status=400)
+
+    valid_fields = ['species', 'area', 'body_of_water', 'user__username']
+    if search_field and search_field not in valid_fields:
+        return Response({"error": "Invalid search field"}, status=400)
+
+    # Build queryset based on field or full-text search
+    if search_field:
+        # Search only in selected field
+        filter_kwargs = {f"{search_field}__icontains": search_term}
+        catches = CatchEntry.objects.filter(**filter_kwargs)
+    else:
+        # Search across all relevant fields
+        catches = CatchEntry.objects.filter(
+            Q(species__icontains=search_term) |
+            Q(area__icontains=search_term) |
+            Q(body_of_water__icontains=search_term) |
+            Q(user__username__icontains=search_term)
+        )
+
+    # Serialize and cache
+    serializer = CatchSerializer(catches, many=True)
+    data = serializer.data
+    cache.set(cache_key, data, timeout=300)
+
+    return Response(data)

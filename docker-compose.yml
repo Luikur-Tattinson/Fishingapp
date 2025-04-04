@@ -19,6 +19,9 @@ services:
   web:
     build: ./backend
     command: gunicorn fishingapp.wsgi:application --bind 0.0.0.0:8000
+    environment:
+      POSTGRES_HOST: db
+      REDIS_URL: redis://redis:6379/1
     volumes:
       - ./backend:/code
     ports:
@@ -38,3 +41,4 @@ services:
 
 volumes:
   postgres_data:
+

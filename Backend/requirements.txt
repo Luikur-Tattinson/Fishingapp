@@ -9,3 +9,4 @@ gunicorn
 Pillow
 django-cors-headers
 requests
+django-filter

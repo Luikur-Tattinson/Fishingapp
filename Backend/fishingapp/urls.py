@@ -24,6 +24,7 @@ from users.views import forgot_password
 from catches.views import get_catches, create_catch
 from django.conf import settings
 from django.conf.urls.static import static
+from catches.views import search_catches
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,5 +34,6 @@ urlpatterns = [
     path('api/me/', get_user_profile, name='get_user_profile'),
     path('api/forgot-password/', forgot_password, name='forgot-password'),
     path('api/get-catches/', get_catches, name='get-catches'),
-    path('api/catches/add/', create_catch, name='create_catch')
+    path('api/catches/add/', create_catch, name='create_catch'),
+    path('api/catches/search/', search_catches, name='catch_search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

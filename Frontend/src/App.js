@@ -8,7 +8,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 import EditProfile from './components/EditProfile';
-import Database from './components/Database';
+import Database from './components/Database/Database';
 
 function App() {
   return(
