@@ -51,6 +51,7 @@ jobs:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
         POSTGRES_HOST: localhost
+        REDIS_URL: redis://localhost:6379/1
       run: |
         cd Backend
         python manage.py test
