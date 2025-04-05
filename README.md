@@ -1,4 +1,4 @@
-# Register and add new fishing catches to the database including, but not limited to images, map location and automatic weather retrieval
+## Register and add new fishing catches to the database including, but not limited to images, map location and automatic weather retrieval
 
 
 ## Tech stack
