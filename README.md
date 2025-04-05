@@ -4,18 +4,18 @@
 ## Tech stack
 
 ### Backend
-Language and framework: Python & [Django] (https://www.djangoproject.com/)
+Language and framework: Python & [Django](https://www.djangoproject.com/)
 Authentication: JWT
-Asynchronous processing: [Celery] (https://docs.celeryq.dev/en/stable/getting-started/first-steps-with-celery.html) + [Redis] (https://redis.io/)
+Asynchronous processing: [Celery](https://docs.celeryq.dev/en/stable/getting-started/first-steps-with-celery.html) + [Redis](https://redis.io/)
 Caching: Redis
 API Communication: REST
-Database: [PostgreSQL] (https://www.postgresql.org/)
+Database: [PostgreSQL](https://www.postgresql.org/)
 
 ### Frontend
-Language: [React js] (https://react.dev/)
-State management: [Redux] (https://redux.js.org/) & [React Query] (https://tanstack.com/query/latest)
-Maps: [Leaflet] (https://leafletjs.com/)
-Weather API: [Open-meteo] (https://open-meteo.com/)
+Language: [React js](https://react.dev/)
+State management: [Redux](https://redux.js.org/) & [React Query](https://tanstack.com/query/latest)
+Maps: [Leaflet](https://leafletjs.com/)
+Weather API: [Open-meteo](https://open-meteo.com/)
 
 ## How to run
 
